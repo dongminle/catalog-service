@@ -1,5 +1,7 @@
 HELP.md
 .gradle
+.pytest_cache/
+gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
