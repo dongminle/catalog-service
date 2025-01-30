@@ -24,7 +24,7 @@ public class BookValidationTests {
     @Test
     void whenAllFieldsCorrectThenValidationSucceeds() {
         var book =
-            new Book("1234567890", "Title", "Author",  9.90);
+            Book.of("1234567890", "Title", "Author",  9.90);
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).isEmpty();
     }
@@ -32,7 +32,7 @@ public class BookValidationTests {
     @Test
     void whenIsbnIsBlankThenTwoViolationsReturned() {
         var book =
-            new Book("", "Title", "Author", 9.90);
+            Book.of("", "Title", "Author", 9.90);
 
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(2);
@@ -50,7 +50,7 @@ public class BookValidationTests {
     @Test
     void whenIsbnDefinedButIncorrectThenValidationFails() {
         var book =
-            new Book("a223456789", "Title", "Author", 9.90);
+            Book.of("a223456789", "Title", "Author", 9.90);
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
@@ -60,7 +60,7 @@ public class BookValidationTests {
     @Test
     void whenTitleIsBlankThenValidationFails() {
         var book =
-            new Book("1234567890", "", "Author", 9.90);
+            Book.of("1234567890", "", "Author", 9.90);
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
@@ -70,7 +70,7 @@ public class BookValidationTests {
     @Test
     void whenTitleAndAuthorAreBlankThenTwoViolationsReturned() {
         var book =
-            new Book("1234567890", "", "", 9.90);
+            Book.of("1234567890", "", "", 9.90);
 
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(2);
@@ -89,7 +89,7 @@ public class BookValidationTests {
     @Test
     void whenPriceIsBlankThenValidationFails() {
         var book =
-                new Book("1234567890", "Title", "Author", null);
+                Book.of("1234567890", "Title", "Author", null);
 
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
@@ -100,7 +100,7 @@ public class BookValidationTests {
     @Test
     void whenPriceIsNegativeThenValidationFails() {
         var book =
-                new Book("1234567890", "Title", "Author", -90.0);
+                Book.of("1234567890", "Title", "Author", -90.0);
 
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
