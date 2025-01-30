@@ -9,7 +9,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import com.polarbookshop.catalogservice.domain.Book;
 
 @JsonTest
-public class BookJsonTests {
+public class BookJsonTest {
 
     @Autowired
     private JacksonTester<Book> json;
