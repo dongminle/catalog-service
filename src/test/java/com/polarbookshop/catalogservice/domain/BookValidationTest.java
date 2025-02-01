@@ -1,9 +1,10 @@
 package com.polarbookshop.catalogservice.domain;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
-public class BookValidationTest {
+class BookValidationTests {
+
     private static Validator validator;
 
     @BeforeAll
@@ -23,74 +25,53 @@ public class BookValidationTest {
 
     @Test
     void whenAllFieldsCorrectThenValidationSucceeds() {
-        var book =
-            Book.of("1234567890", "Title", "Author",  9.90);
+        var book = Book.of("1234567890", "Title", "Author", 9.90, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).isEmpty();
     }
 
     @Test
-    void whenIsbnIsBlankThenTwoViolationsReturned() {
-        var book =
-            Book.of("", "Title", "Author", 9.90);
-
+    void whenIsbnNotDefinedThenValidationFails() {
+        var book = Book.of("", "Title", "Author", 9.90, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(2);
-        assertTrue(
-            violations.stream()
-                .map(ConstraintViolation::getMessage)
-                .anyMatch(message -> message.equals("The book ISBN must be defined.")));
-
-        assertTrue(
-            violations.stream()
-                .map(ConstraintViolation::getMessage)
-                .anyMatch(message -> message.equals("The ISBN format must be valid.")));
+        List<String> constraintViolationMessages = violations.stream()
+                .map(ConstraintViolation::getMessage).collect(Collectors.toList());
+        assertThat(constraintViolationMessages)
+                .contains("The book ISBN must be defined.")
+				.contains("The ISBN format must be valid.");
     }
 
     @Test
     void whenIsbnDefinedButIncorrectThenValidationFails() {
-        var book =
-            Book.of("a223456789", "Title", "Author", 9.90);
+        var book = Book.of("a234567890", "Title", "Author", 9.90, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
-            .isEqualTo("The ISBN format must be valid.");
+				.isEqualTo("The ISBN format must be valid.");
     }
 
     @Test
-    void whenTitleIsBlankThenValidationFails() {
-        var book =
-            Book.of("1234567890", "", "Author", 9.90);
+    void whenTitleIsNotDefinedThenValidationFails() {
+        var book = Book.of("1234567890", "", "Author", 9.90, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
-            .isEqualTo("The book title must be defined.");
+                .isEqualTo("The book title must be defined.");
     }
 
     @Test
-    void whenTitleAndAuthorAreBlankThenTwoViolationsReturned() {
-        var book =
-            Book.of("1234567890", "", "", 9.90);
-
+    void whenAuthorIsNotDefinedThenValidationFails() {
+        var book = Book.of("1234567890", "Title", "", 9.90, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
-        assertThat(violations).hasSize(2);
-
-        assertTrue(
-                violations.stream()
-                        .map(ConstraintViolation::getMessage)
-                        .anyMatch(message -> message.equals("The book title must be defined.")));
-
-        assertTrue(
-                violations.stream()
-                        .map(ConstraintViolation::getMessage)
-                        .anyMatch(message -> message.equals("The book author must be defined.")));
+        assertThat(violations).hasSize(1);
+        assertThat(violations.iterator().next().getMessage())
+                .isEqualTo("The book author must be defined.");
     }
 
     @Test
-    void whenPriceIsBlankThenValidationFails() {
-        var book =
-                Book.of("1234567890", "Title", "Author", null);
-
+    void whenPriceIsNotDefinedThenValidationFails() {
+        var book = Book.of("1234567890", "Title", "Author", null, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
@@ -98,13 +79,28 @@ public class BookValidationTest {
     }
 
     @Test
-    void whenPriceIsNegativeThenValidationFails() {
-        var book =
-                Book.of("1234567890", "Title", "Author", -90.0);
-
+    void whenPriceDefinedButZeroThenValidationFails() {
+        var book = Book.of("1234567890", "Title", "Author", 0.0, "Polarsophia");
         Set<ConstraintViolation<Book>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
                 .isEqualTo("The book price must be greater than zero.");
     }
+
+    @Test
+    void whenPriceDefinedButNegativeThenValidationFails() {
+        var book = Book.of("1234567890", "Title", "Author", -9.90, "Polarsophia");
+        Set<ConstraintViolation<Book>> violations = validator.validate(book);
+        assertThat(violations).hasSize(1);
+        assertThat(violations.iterator().next().getMessage())
+                .isEqualTo("The book price must be greater than zero.");
+    }
+
+    @Test
+    void whenPublisherIsNotDefinedThenValidationSucceeds() {
+        Book book = Book.of("1234567890", "Title", "Author", 9.90,null);
+        Set<ConstraintViolation<Book>> violations = validator.validate(book);
+        assertThat(violations).isEmpty();
+    }
+
 }
