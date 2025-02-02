@@ -20,7 +20,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: corretto
-        java-version: 17.0.13
+        java-version: 17
         cache: gradle
     - name: Code vulnerability scanning
       uses: anchore/scan-action@v3
@@ -55,7 +55,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: corretto
-          java-version: 17.0.13
+          java-version: 17
           cache: gradle
       - name: Build container image
         run: |
