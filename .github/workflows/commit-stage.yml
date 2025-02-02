@@ -19,8 +19,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        distribution: temurin
-        java-version: 17
+        distribution: amazon-corretto
+        java-version: 17.0.13
         cache: gradle
     - name: Code vulnerability scanning
       uses: anchore/scan-action@v3
