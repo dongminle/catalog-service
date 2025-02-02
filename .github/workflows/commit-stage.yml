@@ -37,7 +37,7 @@ jobs:
     - name: Build, unit tests and integration tests
       run: |
         chmod +x gradlew
-        ./gradlew build
+        ./gradlew build -Dspring.profiles.active=integration
 
   package:
     name: Package and Publish
