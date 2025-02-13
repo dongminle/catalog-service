@@ -31,7 +31,7 @@ management:
         include: refresh
 
 server:
-  port: 9090
+  port: 9001
   shutdown: graceful
   tomcat:
     connection-timeout: 2s
